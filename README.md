@@ -1,6 +1,5 @@
 # SpringCalculator
-[![Coverage Status](https://coveralls.io/repos/github/yagogr98/SpringCalculator/badge.svg)](https://coveralls.io/github/yagogr98/SpringCalculator)
-
+[![Coverage Status](https://coveralls.io/repos/github/yagogr98/SpringCalculator/badge.svg?branch=master)](https://coveralls.io/github/yagogr98/SpringCalculator?branch=master)
 
 
 ## API Calculadora simple implementada en Springboot.
