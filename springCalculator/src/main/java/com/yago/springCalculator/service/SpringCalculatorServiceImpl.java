@@ -1,16 +1,20 @@
 package com.yago.springCalculator.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import io.corp.calculator.TracerImpl;
 
 @Service
 public class SpringCalculatorServiceImpl implements SpringCalculatorService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SpringCalculatorServiceImpl.class);
 
+	private TracerImpl tracerIteriam = new TracerImpl();
 	/**
 	 * Método que devuelve la suma. Utiliza el metodo add de BigDecimal
 	 * 
@@ -50,46 +54,72 @@ public class SpringCalculatorServiceImpl implements SpringCalculatorService {
 		LOGGER.debug("Entra en metodo del service con parametros -> tipoOp:" + tipoOperacion + " num1:" + numero1
 				+ " num2:" + numero2);
 
-		//Se comprueba que ninguno de los parametros llegue nulo
-		if(numero1 == null) {
-			LOGGER.error("El numero 1 es nulo");
-			throw new RuntimeException("Primer operando nulo");
-		}
-		if(numero2 == null) {
-			LOGGER.error("El numero 2 es nulo");
-			throw new RuntimeException("segundo operando nulo");
-		}
-		if(tipoOperacion == null) {
-			LOGGER.error("El tipo de operacion es nulo");
-			throw new RuntimeException("Operando nulo");
-		}
-		
-		BigDecimal result;
-		
+		comprobarParametros(tipoOperacion, numero1, numero2);
+
+
 		if (tipoOperacion.equals("add")) {
 			// Caso Suma
-			
-			result = numero1.add(numero2);
+
+			Double aux = numero1.add(numero2).doubleValue();
+			tracerIteriam.trace(aux);
+			LOGGER.debug(tracerIteriam.toString());
+			return aux;
 		} else if (tipoOperacion.equals("sub")) {
 			// Caso resta
-			
-			result = numero1.subtract(numero2);
+
+			Double aux = numero1.subtract(numero2).doubleValue();
+
+			tracerIteriam.trace(aux);
+			return aux;
 		} else if (tipoOperacion.equals("div")) {
 			// Caso División
 			Double n1 = numero1.doubleValue();
 			Double n2 = numero2.doubleValue();
-			
-			return n1/n2;
+			numero1.divide(numero2, RoundingMode.HALF_UP);
+			Double aux =  n1/n2;
+			tracerIteriam.trace(aux);
+			return aux;
 		} else if (tipoOperacion.equals("mul")) {
 			// Caso Mult.
-			
-			result = numero1.multiply(numero2);
+
+			Double aux = numero1.multiply(numero2).doubleValue();
+			tracerIteriam.trace(aux);
+			return aux;
 		} else {
 			LOGGER.error("tipo de operacion invalida: " + tipoOperacion);
-			throw new RuntimeException("Operacion no reconocida");
+			RuntimeException e =  new RuntimeException("Operacion no reconocida");
+			tracerIteriam.trace(e);
+			throw e;
 		}
-		
-		return result.doubleValue();
+
+	}
+
+	/**
+	 * Metodo privado que comprueba la validez de los parametros
+	 * @param tipoOperacion
+	 * @param numero1
+	 * @param numero2
+	 */
+	private void comprobarParametros(String tipoOperacion, BigDecimal numero1, BigDecimal numero2) {
+		//Se comprueba que ninguno de los parametros llegue nulo
+		if(numero1 == null) {
+			LOGGER.error("El numero 1 es nulo");
+			RuntimeException e =  new RuntimeException("Primer operando nulo");
+			tracerIteriam.trace(e);
+			throw e;
+		}
+		if(numero2 == null) {
+			LOGGER.error("El numero 2 es nulo");
+			RuntimeException e =  new RuntimeException("segundo operando nulo");
+			tracerIteriam.trace(e);
+			throw e;
+		}
+		if(tipoOperacion == null) {
+			LOGGER.error("El tipo de operacion es nulo");
+			RuntimeException e = new RuntimeException("Operando nulo");
+			tracerIteriam.trace(e);
+			throw e;
+		}
 	}
 
 }
