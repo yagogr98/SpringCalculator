@@ -21,4 +21,7 @@ public interface SpringCalculatorService {
 	 */
 	public BigDecimal restar(BigDecimal numero1, BigDecimal numero2);
 
+
+	public Double calcular(String tipoOperacion, BigDecimal numero1, BigDecimal numero2);
+
 }

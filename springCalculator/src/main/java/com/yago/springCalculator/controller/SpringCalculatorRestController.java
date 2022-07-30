@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.yago.springCalculator.service.SpringCalculatorService;
@@ -20,33 +20,17 @@ public class SpringCalculatorRestController {
 
     
     /**
-     * Método para realizar sumas.
+     * Método para calcular.
      * Recibe dos numeros por url.
      * @param StringId
      * @return suma de parametros
      */
-    @GetMapping("/sumar/{numero1}/{numero2}")
-    public BigDecimal sumar(@PathVariable BigDecimal numero1, @PathVariable BigDecimal numero2){
+    @GetMapping("/operar")
+    public Double operar(@RequestParam(name = "tipoOperacion") String tipoOperacion, @RequestParam(name = "primerOperando") BigDecimal numero1, @RequestParam(name = "segundoOperando") BigDecimal numero2){
         
-    	BigDecimal resultado = springCalculatorService.sumar(numero1,numero2);
+    	return springCalculatorService.calcular(tipoOperacion, numero1, numero2);
 
-        
-        return resultado;
     }
     
-    /**
-     * Método para realizar restas.
-     * Recibe dos numeros por url.
-     * @param StringId
-     * @return resta de parametros
-     */
-    @GetMapping("/restar/{numero1}/{numero2}")
-    public BigDecimal restar(@PathVariable BigDecimal numero1, @PathVariable BigDecimal numero2){
-        
-    	BigDecimal resultado = springCalculatorService.restar(numero1,numero2);
-
-        
-        return resultado;
-    }
 
 }
