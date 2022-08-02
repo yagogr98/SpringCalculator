@@ -1,11 +1,16 @@
-package com.yago.springCalculator.service;
+package com.yago.springcalculator.service;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.yago.springcalculator.bean.AppConfig;
+import com.yago.springcalculator.exception.OperacionNoImplementadaException;
+import com.yago.springcalculator.exception.ParametroIncorrectoException;
+import com.yago.springcalculator.operacion.FactoriaOperaciones;
 
 import io.corp.calculator.TracerImpl;
 
@@ -14,7 +19,7 @@ public class SpringCalculatorServiceImpl implements SpringCalculatorService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SpringCalculatorServiceImpl.class);
 
-	private TracerImpl tracerIteriam = new TracerImpl();
+	private TracerImpl tracerIteriam =AppConfig.getTracer();
 	/**
 	 * Método que devuelve la suma. Utiliza el metodo add de BigDecimal
 	 * 
@@ -47,50 +52,19 @@ public class SpringCalculatorServiceImpl implements SpringCalculatorService {
 	 *                      (+,-,*,/)
 	 * @param numero1       primer Operando de la operación
 	 * @param numero2       segundo Operando de la operacion
+	 * @throws ParametroIncorrectoException 
+	 * @throws OperacionNoImplementadaException 
 	 */
 	@Override
-	public Double calcular(String tipoOperacion, BigDecimal numero1, BigDecimal numero2) {
+	public BigDecimal calcular(String tipoOperacion, BigDecimal numero1, BigDecimal numero2) throws ParametroIncorrectoException, OperacionNoImplementadaException {
 
 		LOGGER.debug("Entra en metodo del service con parametros -> tipoOp:" + tipoOperacion + " num1:" + numero1
 				+ " num2:" + numero2);
 
 		comprobarParametros(tipoOperacion, numero1, numero2);
-
-
-		if (tipoOperacion.equals("add")) {
-			// Caso Suma
-
-			Double aux = numero1.add(numero2).doubleValue();
-			tracerIteriam.trace(aux);
-			LOGGER.debug(tracerIteriam.toString());
-			return aux;
-		} else if (tipoOperacion.equals("sub")) {
-			// Caso resta
-
-			Double aux = numero1.subtract(numero2).doubleValue();
-
-			tracerIteriam.trace(aux);
-			return aux;
-		} else if (tipoOperacion.equals("div")) {
-			// Caso División
-			Double n1 = numero1.doubleValue();
-			Double n2 = numero2.doubleValue();
-			numero1.divide(numero2, RoundingMode.HALF_UP);
-			Double aux =  n1/n2;
-			tracerIteriam.trace(aux);
-			return aux;
-		} else if (tipoOperacion.equals("mul")) {
-			// Caso Mult.
-
-			Double aux = numero1.multiply(numero2).doubleValue();
-			tracerIteriam.trace(aux);
-			return aux;
-		} else {
-			LOGGER.error("tipo de operacion invalida: " + tipoOperacion);
-			RuntimeException e =  new RuntimeException("Operacion no reconocida");
-			tracerIteriam.trace(e);
-			throw e;
-		}
+		BigDecimal out = FactoriaOperaciones.getOperacion(tipoOperacion).calcular(numero1, numero2);
+		tracerIteriam.trace(out);
+		return out;
 
 	}
 
@@ -99,24 +73,25 @@ public class SpringCalculatorServiceImpl implements SpringCalculatorService {
 	 * @param tipoOperacion
 	 * @param numero1
 	 * @param numero2
+	 * @throws ParametroIncorrectoException 
 	 */
-	private void comprobarParametros(String tipoOperacion, BigDecimal numero1, BigDecimal numero2) {
+	private void comprobarParametros(String tipoOperacion, BigDecimal numero1, BigDecimal numero2) throws ParametroIncorrectoException {
 		//Se comprueba que ninguno de los parametros llegue nulo
 		if(numero1 == null) {
 			LOGGER.error("El numero 1 es nulo");
-			RuntimeException e =  new RuntimeException("Primer operando nulo");
+			ParametroIncorrectoException e =  new ParametroIncorrectoException("Primer operando nulo");
 			tracerIteriam.trace(e);
 			throw e;
 		}
 		if(numero2 == null) {
 			LOGGER.error("El numero 2 es nulo");
-			RuntimeException e =  new RuntimeException("segundo operando nulo");
+			ParametroIncorrectoException e =  new ParametroIncorrectoException("segundo operando nulo");
 			tracerIteriam.trace(e);
 			throw e;
 		}
 		if(tipoOperacion == null) {
 			LOGGER.error("El tipo de operacion es nulo");
-			RuntimeException e = new RuntimeException("Operando nulo");
+			ParametroIncorrectoException e = new ParametroIncorrectoException("Operando nulo");
 			tracerIteriam.trace(e);
 			throw e;
 		}

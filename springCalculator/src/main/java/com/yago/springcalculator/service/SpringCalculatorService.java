@@ -1,6 +1,9 @@
-package com.yago.springCalculator.service;
+package com.yago.springcalculator.service;
 
 import java.math.BigDecimal;
+
+import com.yago.springcalculator.exception.OperacionNoImplementadaException;
+import com.yago.springcalculator.exception.ParametroIncorrectoException;
 
 public interface SpringCalculatorService {
 	
@@ -22,6 +25,6 @@ public interface SpringCalculatorService {
 	public BigDecimal restar(BigDecimal numero1, BigDecimal numero2);
 
 
-	public Double calcular(String tipoOperacion, BigDecimal numero1, BigDecimal numero2);
+	public BigDecimal calcular(String tipoOperacion, BigDecimal numero1, BigDecimal numero2) throws ParametroIncorrectoException, OperacionNoImplementadaException;
 
 }
